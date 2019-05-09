@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <div class="container">
+    <h1><b> Search for a Book: </b></h1>
+          <form class="search-form text-center">
+            <div id="search-form-div">
+                <input id="searchBooks" type="text" class="form-control"/>
+            </div>
+                <br>
+                <button id="searchButton" class="btn btn-primary mybutton"> search</button>
+               <br>
+          </form>
+          <br>
+          <br>
+    </div>
+    <div id="results"></div>
+
+    <script>
+
+var searchQuery;
+$("#searchButton").on("click", function(event) {
+    console.log("Search");
+  event.preventDefault();
+  searchQuery = $("#searchBooks")
+    .val()
+    .trim();
+
+  var queryURL =
+    "https://www.googleapis.com/books/v1/volumes?q=" +
+    searchQuery;
+
+  $.ajax({
+    url: queryURL,
+    method: "GET"
+  }).then(function(response) {
+    var result = response;
+    var total = 10;
+    console.log("Function Response");
+
+    $("#results").empty();
+
+    for (var i = 0; i < total; i++) {
+      var book = result.items[i];
+      console.log(book);
+      var bookRow = $("<div class='row'></div>");
+
+      var image_url = book.volumeInfo.imageLinks.thumbnail;
+      var image = $("<img>");
+      image.addClass("insertImage keepElement");
+      image.attr("src", image_url);
+
+      var link = $("<a>" + book.volumeInfo.title + "</a>");
+      link.addClass("keepElement recipeLink");
+      link.attr("href", "https://books.google.com/books?id=" + book.id);
+
+      var description = $("<div>");
+      description.html(book.volumeInfo.description);
+
+
+      bookRow.append(image);
+      bookRow.append(link);
+      bookRow.append(description);
+
+      console.log(bookRow);
+
+      $("#results").append(bookRow);
+    }
+
+    $(".addbutton").on("click", function() {
+      var addname = $("<div id='addname'>");
+      var addtitle = $(this)
+        .parent()
+        .children(".title");
+      var addimage = $(this)
+        .parent()
+        .children(".insertImage");
+      var addlink = $(this)
+        .parent()
+        .children(".recipeLink");
+      var addbtn = $(this)
+        .parent()
+        .children(".btn");
+
+      var datatitle = $(this)
+        .parent()
+        .children(".title")
+        .html();
+      var datalink = $(this)
+        .parent()
+        .children(".recipeLink")
+        .attr("href");
+
+      var addPost = {
+        text: datatitle,
+        description: datalink
+      };
+
+      console.log(addPost);
+
+      addname.append(addtitle);
+      addname.append(addimage);
+      addname.append(addlink);
+      addname.append(addbtn);
+
+      $("#display").append(addname);
+
+      addname.children(".btn").remove();
+      $("#shows").show();
+    
+    });
+  });
+
+  console.log("search done");
+});
+
+    
+    </script>
+
+
+    </body>
+</html>
